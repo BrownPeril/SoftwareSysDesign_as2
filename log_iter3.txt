@@ -1,0 +1,300 @@
+=== ITERATION: iter3 ===
+=== TIMESTAMP: 2026-06-11 09:09:24 ===
+
+=== SYSTEM PROMPT ===
+=== ADD 3.0 Method (Steps 1-7) ===
+
+Step 1 - Review Inputs:
+The first step of the ADD method is to review the inputs and identify which requirements will be considered as architectural drivers.
+
+Step 2 - Establish the Iteration Goal by Selecting Drivers:
+Design rounds typically take the form of a series of design iterations, each focusing on achieving a specific goal. The goal typically involves designing to satisfy a subset of the drivers.
+
+Step 3 - Choose One or More Elements of the System to Refine:
+This step is the beginning of the core design activities. The elements you choose are those that participate in satisfying the specific drivers. For greenfield development, you can start by establishing the system context and then selecting the only available element—the system itself—to decompose and refine. For existing systems or subsequent design iterations of a greenfield system, you typically choose to refine elements that have been identified in previous iterations.
+
+Step 4 - Choose One or More Design Concepts That Satisfy the Selected Drivers:
+This step requires you to identify alternatives among the design concepts that can be used to achieve the iteration goal, and select one of them.
+
+Step 5 - Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces:
+This step requires you to instantiate architectural elements based on the selected design concepts, allocate responsibilities, and define interfaces.
+
+Step 6 - Sketch Views and Record Design Decisions:
+Sketch appropriate views (module, component-and-connector, allocation) to record the design decisions made so far.
+
+Step 7 - Perform Analysis of Current Design and Review Iteration Goal:
+Analyze whether the current design satisfies the selected drivers and review whether the iteration goal has been achieved.
+
+=== HPS: Hotel Pricing System - Design Purpose ===
+
+This project can be treated as greenfield development because it involves completely replacing an existing system. The purpose of the design activity is to make initial decisions to support building the system from scratch.
+
+=== HPS: Primary Functionality (Use Cases) ===
+
+| Use Case ID       | Description |
+| :---------------- | :---------- |
+| HPS-1: Login      | A user (business user or administrator) provides credentials at the login window. The system validates these credentials through the user identity service, and if successful, grants access to the system. After logging in, the user can only query and change prices for hotels they are authorized for. |
+| HPS-2: Change Price | A user selects a specific hotel for which they have the right to change prices, and selects a date to change the base price or fixed price. At this point, all prices calculated based on the base price are calculated. The system allows price change simulation before actually changing prices. When prices are changed, they are pushed to the channel management system and are available for external systems to query. |
+| HPS-3: Query Price | A user or external system queries the price of a specified hotel through the user interface or query API. |
+| HPS-4: Manage Hotels | An administrator adds, changes, or modifies hotel information. This includes editing the hotel's tax rates, available prices, and room types. |
+| HPS-5: Manage Prices | An administrator adds, changes, or modifies prices. This includes defining calculation business rules for different prices. |
+| HPS-6: Manage Users | An administrator changes the permissions of a specified user. |
+
+=== HPS: Quality Attributes ===
+
+| ID   | Quality Attribute | Scenario [Associated Use Case] | Importance to Customer | Difficulty of Implementation |
+| :--- | :---------------- | :----------------------------- | :--------------------- | :--------------------------- |
+| Q-1  | Performance       | During normal operation, the base price for a specific hotel and date is changed; prices for all prices and room types of the hotel are published (ready for query) within 100 milliseconds. [HPS-2] | High | High |
+| Q-2  | Reliability       | A user makes multiple price changes for a specified hotel; 100% of the price changes are successfully published (available for query) and received by the channel management system. [HPS-2] | High | High |
+| Q-3  | Availability      | The SLA for price queries must reach 99.9% outside of maintenance windows. [All] | High | High |
+| Q-4  | Scalability       | The system initially supports at least 100,000 price queries per day through its API, and should be able to handle up to 1,000,000 with an average latency increase of no more than 20%. [HPS-3] | High | High |
+| Q-5  | Security          | A user logs into the system through the frontend. The user's credentials are validated through the user identity service, and after login, they can only see the functions they are authorized to use. [All] | High | Medium |
+| Q-6  | Modifiability     | Add a price query endpoint to the system that uses a non-REST protocol (e.g., gRPC). The new endpoint does not require changes to the core components of the system. [All] | Medium | Medium |
+| Q-7  | Deployability     | The application is migrated between non-production environments as part of the development process. No code changes are required. [All] | Medium | Medium |
+| Q-8  | Monitorability    | System operators wish to measure the performance and reliability of price publication during runtime. The system provides a mechanism that allows 100% of these metrics to be collected as needed. [HPS-2] | Medium | Medium |
+| Q-9  | Testability       | 100% of the system and its elements should support integration testing independent of external systems. [All] | Medium | Medium |
+
+=== HPS: Architectural Concerns ===
+
+| ID    | Concern |
+| :---- | :------- |
+| CRN-1 | Establish the overall initial system structure. |
+| CRN-2 | Leverage the team's knowledge of Java technologies, Angular framework, and Kafka. |
+| CRN-3 | Allocate work to development team members. |
+| CRN-4 | Avoid introducing technical debt. |
+| CRN-5 | Establish continuous deployment infrastructure. |
+
+=== HPS: Constraints ===
+
+| ID    | Constraint |
+| :---- | :--------- |
+| CON-1 | Users must interact with the system through web browsers on different platforms (Windows, OSX, Linux) and different devices. |
+| CON-2 | Users are managed through a cloud provider identity service, and resources are hosted in the cloud. |
+| CON-3 | The code must be hosted on a proprietary Git-based platform that is already used by other projects in the company. |
+| CON-4 | The initial version of the system must be delivered within 6 months, but an initial version (MVP) must be demonstrated to internal stakeholders within at most 2 months. |
+| CON-5 | The system must initially interact with existing systems through REST APIs, but may need to support other protocols in the future. |
+| CON-6 | The system should be designed with a cloud-native approach as a priority. |
+
+You are a software architect who strictly follows the ADD 3.0 method.
+You must follow these rules:
+1. It is FORBIDDEN to introduce any external domain knowledge (you may ONLY use the content in the "Prior Knowledge" section above).
+2. It is FORBIDDEN to use any few-shot examples or hand-crafted demonstration outputs.
+3. It is FORBIDDEN to reinterpret the requirements or add extra requirements beyond what is stated in the Prior Knowledge.
+4. All design decisions must explicitly reference the Prior Knowledge (e.g., "According to Q-2's scenario", "According to CON-4's time constraint").
+5. Each iteration must output in the strict order of Step 2 → Step 3 → Step 4 → Step 5 → Step 6 → Step 7. If any step is skipped, the output is invalid.
+6. All views must be generated using Mermaid code blocks (```mermaid ... ```).
+7. The output must be in English, but minor grammatical imperfections are acceptable.
+
+=== USER PROMPT ===
+The following is the output from the previous iteration:
+
+--- BEGIN PREVIOUS ITERATION OUTPUT ---
+### Step 2 - Establish the Iteration Goal by Selecting Drivers
+
+**Iteration Goal:** Identifying Structures to Support Primary Functionality.
+
+**Selected Drivers:**
+*   **HPS-2 (Change Price):** A user changes the base price or fixed price, calculations are performed, and prices are pushed to the channel management system.
+*   **HPS-3 (Query Price):** A user or external system queries the price of a specified hotel.
+*   **HPS-4 (Manage Hotels):** An administrator adds, changes, or modifies hotel information, tax rates, and room types.
+
+**Reasoning:** The overall system structure was established in the previous iteration. To realize the core business value, we must now define the internal components that support these specific primary use cases (HPS-2, HPS-3, HPS-4).
+
+### Step 3 - Choose One or More Elements of the System to Refine
+
+**Element Selected:** HPS API Application.
+
+**Justification:** According to the previous iteration, the HPS API Application is the central backend element responsible for business logic. It must be refined into smaller architectural elements to handle the specific responsibilities of managing hotels (HPS-4), calculating and changing prices (HPS-2), and serving price queries (HPS-3).
+
+### Step 4 - Choose One or More Design Concepts That Satisfy the Selected Drivers
+
+**Design Concept 1: Component-Based Layered Architecture**
+To organize the business logic inside the HPS API Application, we will divide it into distinct functional components mapped to the primary use cases.
+
+**Design Concept 2: Message Broker for Asynchronous Push (HPS-2)**
+When prices are changed, they must be pushed to the external Channel Management System (HPS-2). We need a mechanism to reliably transport these messages.
+*   **Alternative A: RabbitMQ.** A popular message broker, but not explicitly aligned with the team's prior knowledge.
+*   **Alternative B: Kafka.** A high-throughput distributed event streaming platform.
+*   **Selection:** Alternative B (Kafka).
+*   **Rationale:** According to CRN-2 ("Leverage the team's knowledge of Java technologies, Angular framework, and Kafka"), choosing Kafka directly leverages the team's existing expertise. It also provides the necessary infrastructure to reliably push messages to the Channel Management System as required by HPS-2.
+
+### Step 5 - Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
+
+| Element Name | Responsibility | Properties |
+| :--- | :--- | :--- |
+| **Hotel Management Component** | Handles adding, changing, or modifying hotel information, tax rates, and room types according to HPS-4. | Java-based (CRN-2), exposes REST APIs. |
+| **Price Management Component** | Handles changing base/fixed prices, calculating related prices, and simulating price changes according to HPS-2. | Java-based (CRN-2), interacts with Hotel Management for tax/room data. |
+| **Price Query Component** | Exposes endpoints to allow users or external systems to query the price of a specified hotel according to HPS-3. | Java-based (CRN-2), optimized for read operations. |
+| **Price Publisher Component** | Receives calculated prices from the Price Management Component and pushes them to Kafka. | Java-based (CRN-2). |
+| **Kafka Broker** | Receives price change events and makes them available for external systems (Channel Management System) according to HPS-2 and CRN-2. | Message Broker. |
+
+**Interfaces:**
+*   **HPS Web App to HPS API Components:** REST APIs over HTTP/HTTPS (JSON) (According to CON-5).
+*   **Price Publisher to Kafka Broker:** Kafka producer protocol.
+*   **Kafka Broker to Channel Management System:** Kafka consumer protocol (Push mechanism as per HPS-2).
+
+### Step 6 - Sketch Views and Record Design Decisions
+
+```mermaid
+C4Component
+    title Component and Connector View - HPS API Application
+
+    Container_Boundary(apiApp, "HPS API Application (Java - CRN-2)") {
+        Component(hotelMgmt, "Hotel Management Component", "Java", "Manages hotel info, tax, room types (HPS-4)")
+        Component(priceMgmt, "Price Management Component", "Java", "Calculates and changes prices (HPS-2)")
+        Component(priceQuery, "Price Query Component", "Java", "Handles price queries (HPS-3)")
+        Component(pricePublisher, "Price Publisher Component", "Java", "Formats and pushes price events")
+    }
+
+    Container(kafka, "Kafka Broker", "Kafka", "Streams price updates (CRN-2)")
+    System_Ext(channelSystem, "Channel Management System", "Receives pushed prices (HPS-2)")
+    Container(webApp, "HPS Web Application", "Angular", "User Interface")
+
+    Rel(webApp, hotelMgmt, "REST: Manage Hotels")
+    Rel(webApp, priceMgmt, "REST: Change/Simulate Prices")
+    Rel(webApp, priceQuery, "REST: Query Prices")
+    
+    Rel(priceMgmt, hotelMgmt, "Fetches hotel rules/taxes")
+    Rel(priceMgmt, pricePublisher, "Sends calculated prices")
+    Rel(pricePublisher, kafka, "Publishes price change events")
+    Rel(kafka, channelSystem, "Consumes price change events")
+```
+
+### Step 7 - Perform Analysis of Current Design and Review Iteration Goal
+
+*   **HPS-2 (Change Price):** Addressed. The `Price Management Component` handles the base price change, calculates related prices, and passes them to the `Price Publisher Component`, which pushes them to the `Kafka Broker` to reach the Channel Management System.
+*   **HPS-3 (Query Price):** Addressed. The `Price Query Component` provides a dedicated interface for queries.
+*   **HPS-4 (Manage Hotels):** Addressed. The `Hotel Management Component` is explicitly instantiated to handle administrator actions regarding hotel data.
+*   **CRN-2 (Leverage Team Knowledge):** Addressed. Java is utilized for the backend components, and Kafka is explicitly selected for the asynchronous messaging architecture.
+
+**Conclusion:** The iteration goal of "Identifying Structures to Support Primary Functionality" has been successfully achieved. The HPS API Application has been appropriately refined into functional components that directly map to the selected drivers.
+--- END PREVIOUS ITERATION OUTPUT ---
+
+
+Based on the architecture from iteration 2, now address reliability and availability.
+
+Iteration Goal: Addressing Reliability and Availability Quality Attributes.
+
+Drivers: Q-2 (100% price change publication success) and Q-3 (99.9% uptime for queries).
+
+Step 2: Select Q-2 and Q-3 as drivers.
+
+Step 3: Choose elements to refine: the price publication component and the query API component from iteration 2.
+
+Step 4: Select design concepts for availability (e.g., active redundancy, failover, retry tactics). Refer to tactics from prior knowledge. Compare two alternatives (e.g., load-balanced cluster vs. active-passive). Choose one and justify.
+
+Step 5: Instantiate redundant elements (e.g., load balancer, replicated application instances, database replica). Define health check interfaces.
+
+Step 6: Draw a deployment view (allocation view) using Mermaid, showing physical nodes and redundancy.
+
+Step 7: Analyze whether Q-2 and Q-3 can be met. If not, propose adjustments.
+
+
+=== ASSISTANT RESPONSE ===
+### Step 2 - Establish the Iteration Goal by Selecting Drivers
+
+**Iteration Goal:** Addressing Reliability and Availability Quality Attributes.
+
+**Selected Drivers:**
+*   **Q-2 (Reliability):** A user makes multiple price changes for a specified hotel; 100% of the price changes are successfully published (available for query) and received by the channel management system.
+*   **Q-3 (Availability):** The SLA for price queries must reach 99.9% outside of maintenance windows.
+
+**Reasoning:** With the functional components defined in the previous iteration, the system must now be structured to withstand failures and guarantee the stringent uptime and delivery requirements mandated by the customer.
+
+### Step 3 - Choose One or More Elements of the System to Refine
+
+**Elements Selected:** 
+*   HPS API Application (specifically the Price Publisher Component and Price Query Component).
+*   Kafka Broker.
+*   The deployment structure of the system.
+
+**Justification:** To achieve high availability (Q-3) and strict reliability (Q-2), we must refine the deployment topology of the API and message broker, and introduce fault-tolerance mechanisms into the components responsible for querying and publishing.
+
+### Step 4 - Choose One or More Design Concepts That Satisfy the Selected Drivers
+
+**Design Concept 1: Availability Tactic for Queries (Q-3)**
+To ensure 99.9% SLA for price queries, we must eliminate single points of failure in the application layer.
+*   **Alternative A: Active-Passive Redundancy.** One instance handles traffic while a backup sits idle. 
+*   **Alternative B: Active-Active Load-Balanced Cluster.** Multiple instances run concurrently behind a load balancer.
+*   **Selection:** Alternative B.
+*   **Rationale:** According to Q-3 (99.9% availability) and CON-6 (cloud-native approach), an active-active cluster hosted in the cloud (CON-2) allows for immediate handling of node failures without downtime for failover, fulfilling the high availability requirement.
+
+**Design Concept 2: Reliability Tactic for Price Publication (Q-2)**
+To guarantee 100% of price changes are published successfully, we need fault tolerance in the messaging layer.
+*   **Selection:** Local Retry Mechanism and Broker Clustering.
+*   **Rationale:** According to Q-2, no messages can be lost. The Price Publisher Component will implement a local retry loop if a push fails. Furthermore, the previously selected Kafka Broker (CRN-2) will be deployed as a multi-node cluster with topic replication to ensure messages are safely persisted even if a broker node fails.
+
+### Step 5 - Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
+
+| Element Name | Responsibility | Properties |
+| :--- | :--- | :--- |
+| **Cloud Load Balancer** | Distributes incoming HTTP/REST traffic across healthy API instances. | Cloud resource (CON-2). |
+| **HPS API Instance 1 & 2** | Replicated instances of the HPS API Application containing the Price Query and Price Publisher components. | Java-based. Implements local retries for publication (Q-2). |
+| **Kafka Cluster (Broker Nodes)** | Persists price change events durably using replication to prevent data loss (Q-2). | Multi-node deployment of Kafka (CRN-2). |
+| **Database Primary & Replica** | Replicated data store to ensure the Price Query Component always has access to data even if the primary database fails (Q-3). | Cloud-hosted database (CON-2). |
+
+**Interfaces:**
+*   **Load Balancer to HPS API Instances:** HTTP/REST. The Load Balancer invokes a newly defined `/health` endpoint on the API instances to verify their availability before routing traffic.
+*   **HPS API to Kafka Cluster:** Kafka producer protocol with acknowledgment configuration set to "all" (to guarantee receipt by all replicas for Q-2).
+
+### Step 6 - Sketch Views and Record Design Decisions
+
+```mermaid
+C4Deployment
+    title Deployment View - High Availability and Reliability
+
+    Deployment_Node(cloud, "Cloud Provider (CON-2, CON-6)", "Cloud Infrastructure") {
+        
+        Deployment_Node(lbNode, "Load Balancing Tier") {
+            Container(lb, "Cloud Load Balancer", "Routes traffic & checks /health")
+        }
+
+        Deployment_Node(appCluster, "HPS API Active-Active Cluster (Q-3)") {
+            Container(api1, "HPS API Instance 1", "Java", "Includes Query & Publisher (Retries enabled)")
+            Container(api2, "HPS API Instance 2", "Java", "Includes Query & Publisher (Retries enabled)")
+        }
+
+        Deployment_Node(dbCluster, "Database Tier") {
+            ContainerDb(dbPrimary, "Primary Database", "Relational", "Read/Write")
+            ContainerDb(dbReplica, "Replica Database", "Relational", "Failover/Read-only")
+        }
+
+        Deployment_Node(kafkaCluster, "Kafka Cluster (CRN-2, Q-2)") {
+            Container(kafka1, "Kafka Broker 1", "Kafka")
+            Container(kafka2, "Kafka Broker 2", "Kafka")
+        }
+    }
+
+    System_Ext(channelSystem, "Channel Management System", "External Receiver")
+    Container(webApp, "HPS Web Application", "Angular", "Client Browser (CON-1)")
+
+    Rel(webApp, lb, "HTTPS Requests")
+    Rel(lb, api1, "Routes (Active)")
+    Rel(lb, api2, "Routes (Active)")
+    
+    Rel(api1, dbPrimary, "Reads/Writes")
+    Rel(api2, dbPrimary, "Reads/Writes")
+    Rel(dbPrimary, dbReplica, "Replicates data")
+
+    Rel(api1, kafka1, "Publishes events (with retry)")
+    Rel(api2, kafka1, "Publishes events (with retry)")
+    Rel(kafka1, kafka2, "Replicates partitions")
+    
+    Rel(kafka1, channelSystem, "Consumes events")
+    Rel(kafka2, channelSystem, "Consumes events (failover)")
+```
+
+### Step 7 - Perform Analysis of Current Design and Review Iteration Goal
+
+*   **Q-2 (Reliability - 100% publication success):** Addressed. By introducing a retry loop in the Price Publisher and utilizing a Kafka Cluster with replication, the system ensures that temporary network glitches or single broker failures will not result in dropped price change events.
+*   **Q-3 (Availability - 99.9% query SLA):** Addressed. The introduction of the Cloud Load Balancer routing traffic to an Active-Active HPS API Cluster, coupled with database replication, removes single points of failure in the critical path for price queries.
+*   **CON-2 & CON-6 (Cloud and Cloud-Native):** Addressed. The deployment view explicitly targets cloud infrastructure using load balancers and clustering typical of cloud-native design.
+
+**Conclusion:** The iteration goal of addressing Reliability and Availability Quality Attributes has been successfully achieved. The deployment structure has been refined to provide redundancy and fault tolerance.
+
+=== TOKEN USAGE ===
+Prompt tokens: 3429
+Completion tokens: 2887
+Total tokens: 6316
+
+=== RESPONSE TIMESTAMP: 2026-06-11 09:09:49 ===
