@@ -18,7 +18,7 @@ from openai import OpenAI
 # 配置
 # ============================================================
 BASE_URL = "https://api.ppio.com/openai"
-API_KEY = os.environ.get("HPS_API_KEY", "YOUR_API_KEY_HERE")  # 建议通过环境变量传入
+API_KEY = os.environ.get("HPS_API_KEY", "")  # 建议通过环境变量传入
 MODEL = "pa/gemini-3.1-pro-preview"
 
 client = OpenAI(base_url=BASE_URL, api_key=API_KEY)
