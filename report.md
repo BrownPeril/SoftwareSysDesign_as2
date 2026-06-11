@@ -430,10 +430,11 @@ flowchart TD
 
 ## Interaction Cost Analysis
 
-| The way of completing the assignment | The LLM used | Number of Human Interactions (turns) | Token Consumption (K tokens) |
-|---|---|---|---|
-| Direct LLM interaction | gemini-3.1-pro-preview | 4 | 22.2K (Iter 1: 4.3K, Iter 2: 6.1K, Iter 3: 6.3K, Iter 4: 5.5K) |
-> Total token consumption: 22,229 tokens across 4 iterations.
+| The way of completing the assignment | The LLM used | Number of Human Interactions (turns) | Token Consumption (K tokens) | Time Cost (min) |
+|---|---|---|---|---|
+| Direct LLM interaction | gemini-3.1-pro-preview | 4 | 22.2K (Iter 1: 4.3K, Iter 2: 6.1K, Iter 3: 6.3K, Iter 4: 5.5K) | ~180 |
+> **Token consumption:** 22,229 tokens across 4 iterations.
+> **Time cost breakdown:** Member A (Script + Iter 1: ~50 min), Member B (Iter 2 + 3: ~40 min), Member C (Prep + Iter 4 + Report: ~90 min)
 
 ---
 
